@@ -1,0 +1,142 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_VOTERS 100
+#define MAX_CANDIDATES 5
+
+// Define a structure for a Candidate with a name and a vote count
+typedef struct {
+    char name[50];
+    int votes;
+} Candidate;
+
+// Define a structure for a Voter with a username, password, and a voting status
+typedef struct {
+    char username[50];
+    char password[50];
+    int hasVoted; // 0 means not voted, 1 means voted
+} Voter;
+
+// Create arrays to store voters and candidates
+Voter voters[MAX_VOTERS];
+Candidate candidates[MAX_CANDIDATES];
+int voterCount = 0; // Keeps track of the number of voters
+int candidateCount = 0; // Keeps track of the number of candidates
+
+// Function to register a new voter
+void registerVoter() {
+    if (voterCount >= MAX_VOTERS) {
+        printf("Sorry, no more voters can be registered.\n");
+        return;
+    }
+    printf("Enter your username: ");
+    scanf("%s", voters[voterCount].username);
+    printf("Enter your password: ");
+    scanf("%s", voters[voterCount].password);
+    voters[voterCount].hasVoted = 0; // Initially, the voter has not voted
+    voterCount++;
+    printf("Voter registered successfully.\n");
+}
+
+// Function to add a new candidate
+void addCandidate() {
+    if (candidateCount >= MAX_CANDIDATES) {
+        printf("Sorry, no more candidates can be added.\n");
+        return;
+    }
+    printf("Enter candidate name: ");
+    scanf("%s", candidates[candidateCount].name);
+    candidates[candidateCount].votes = 0; // Initially, the candidate has 0 votes
+    candidateCount++;
+    printf("Candidate added successfully.\n");
+}
+
+// Function to check if a voter is registered and their credentials are correct
+int authenticateVoter(char username[], char password[]) {
+    for (int i = 0; i < voterCount; i++) {
+        if (strcmp(voters[i].username, username) == 0 && strcmp(voters[i].password, password) == 0) {
+            return i; // Return the index of the voter if found
+        }
+    }
+    return -1; // Return -1 if the voter is not found
+}
+
+// Function to allow a voter to cast their vote
+void castVote(int voterIndex) {
+    if (voters[voterIndex].hasVoted) {
+        printf("You have already voted. You can't vote again.\n");
+        return;
+    }
+
+    printf("Candidates:\n");
+    for (int i = 0; i < candidateCount; i++) {
+        printf("%d. %s\n", i + 1, candidates[i].name);
+    }
+
+    int choice;
+    printf("Enter the number of the candidate you want to vote for: ");
+    scanf("%d", &choice);
+
+    if (choice < 1 || choice > candidateCount) {
+        printf("Invalid choice.\n");
+        return;
+    }
+
+    candidates[choice - 1].votes++; // Increment the vote count for the chosen candidate
+    voters[voterIndex].hasVoted = 1; // Mark the voter as having voted
+    printf("Your vote has been cast successfully.\n");
+}
+
+// Function to show the election results
+void showResults() {
+    printf("Election Results:\n");
+    for (int i = 0; i < candidateCount; i++) {
+        printf("%s: %d votes\n", candidates[i].name, candidates[i].votes);
+    }
+}
+
+int main() {
+    int choice;
+    char username[50], password[50];
+    int voterIndex;
+
+    while (1) {
+        // Display the menu options
+        printf("\n1. Register as Voter\n");
+        printf("2. Add a Candidate\n");
+        printf("3. Vote for a Candidate\n");
+        printf("4. Show Election Results\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                registerVoter(); // Register a new voter
+                break;
+            case 2:
+                addCandidate(); // Add a new candidate
+                break;
+            case 3:
+                // Authenticate the voter before allowing them to vote
+                printf("Enter your username: ");
+                scanf("%s", username);
+                printf("Enter your password: ");
+                scanf("%s", password);
+                voterIndex = authenticateVoter(username, password);
+                if (voterIndex == -1) {
+                    printf("Incorrect username or password.\n");
+                } else {
+                    castVote(voterIndex); // Allow the authenticated voter to vote
+                }
+                break;
+            case 4:
+                showResults(); // Show the election results
+                break;
+            case 5:
+                return 0; // Exit the program
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+}
