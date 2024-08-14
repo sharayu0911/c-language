@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    int playerScore = 0;
+    int balls = 6;  // Number of balls
+    int run, userRun;
+
+    srand(time(0));  // Seed the random number generator
+
+    printf("Welcome to the simple cricket game!\n");
+    printf("You have %d balls to play.\n", balls);
+    
+    for (int i = 1; i <= balls; i++) {
+        printf("\nBall %d: Enter your run (0 to 6): ", i);
+        scanf("%d", &userRun);
+
+        if (userRun < 0 || userRun > 6) {
+            printf("Invalid input! Please enter a number between 0 and 6.\n");
+            i--;  // Retry this ball
+            continue;
+        }
+
+        run = rand() % 7;  // Random number between 0 and 6
+
+        printf("Computer's run: %d\n", run);
+
+        if (userRun == run) {
+            printf("You're OUT! Final Score: %d\n", playerScore);
+            break;
+        } else {
+            playerScore += userRun;
+            printf("Good shot! Your score is now: %d\n", playerScore);
+        }
+    }
+
+    if (playerScore > 0) {
+        printf("\nGame Over! Your final score is: %d\n", playerScore);
+    }
+
+    return 0;
+}
